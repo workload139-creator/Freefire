@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Admin Panel</title>
+    <title>Admin Panel - FF Tournament</title>
 
     <link
         rel="stylesheet"
@@ -24,7 +24,7 @@
 <header>
 
     <div class="logo">
-        🔐 ADMIN PANEL
+        🔐 FF TOURNAMENT ADMIN
     </div>
 
     <nav>
@@ -48,9 +48,17 @@
 
 <main>
 
-<h1>
-    📋 Player Submissions
-</h1>
+<section class="hero">
+
+    <h1>
+        📋 PLAYER SUBMISSIONS
+    </h1>
+
+    <p>
+        Review player proof and verify results
+    </p>
+
+</section>
 
 
 {% with messages = get_flashed_messages() %}
@@ -76,6 +84,8 @@
 
     <section class="admin-card">
 
+        <!-- PLAYER HEADER -->
+
         <div class="admin-title">
 
             <h2>
@@ -89,101 +99,139 @@
         </div>
 
 
+        <!-- SUBMISSION TIME -->
+
         <p>
             📅 Submitted:
             {{ item["submitted_at"] }}
         </p>
 
 
-        <div class="proof-buttons">
+        <!-- PLAYER PROOF -->
 
-            <a
-                href="/uploads/{{ item['history_file'] }}"
-                target="_blank"
-                class="link-btn"
-            >
-                📸 View History
-            </a>
+        <div class="proof-section">
+
+            <h3>
+                📁 Match Proof
+            </h3>
+
+            <div class="proof-buttons">
+
+                <a
+                    href="{{ url_for('uploaded_file', filename=item['history_file']) }}"
+                    target="_blank"
+                    class="link-btn"
+                >
+                    📸 View History Screenshot
+                </a>
 
 
-            <a
-                href="/uploads/{{ item['video_file'] }}"
-                target="_blank"
-                class="link-btn"
-            >
-                🎥 View Video
-            </a>
+                <a
+                    href="{{ url_for('uploaded_file', filename=item['video_file']) }}"
+                    target="_blank"
+                    class="link-btn"
+                >
+                    🎥 Watch Match Video
+                </a>
+
+            </div>
 
         </div>
 
 
+        <!-- VERIFY -->
+
         {% if item["status"] == "Pending" %}
 
-        <form
-            method="POST"
-            action="/admin/verify/{{ item['id'] }}"
-        >
+        <div class="verify-section">
 
-            <label>
-                🔢 Verified Kills
-            </label>
+            <h3>
+                ✅ Verify Result
+            </h3>
 
-            <input
-                type="number"
-                name="kills"
-                min="0"
-                required
+            <form
+                method="POST"
+                action="{{ url_for('verify_submission', submission_id=item['id']) }}"
             >
 
+                <label>
+                    🔥 Verified Kills
+                </label>
 
-            <label>
-                🏆 Position
-            </label>
+                <input
+                    type="number"
+                    name="kills"
+                    min="0"
+                    max="99"
+                    placeholder="Enter kills"
+                    required
+                >
 
-            <input
-                type="number"
-                name="position"
-                min="0"
-                required
+
+                <label>
+                    🏆 Position
+                </label>
+
+                <input
+                    type="number"
+                    name="position"
+                    min="1"
+                    max="100"
+                    placeholder="Enter position"
+                    required
+                >
+
+
+                <button type="submit">
+                    🔒 Verify & Lock Result
+                </button>
+
+            </form>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('reject_submission', submission_id=item['id']) }}"
             >
 
+                <button
+                    type="submit"
+                    class="reject"
+                >
+                    ❌ Reject Submission
+                </button>
 
-            <button type="submit">
-                ✅ Verify & Lock
-            </button>
+            </form>
 
-        </form>
+        </div>
 
-
-        <form
-            method="POST"
-            action="/admin/reject/{{ item['id'] }}"
-        >
-
-            <button
-                type="submit"
-                class="reject"
-            >
-                ❌ Reject
-            </button>
-
-        </form>
 
         {% else %}
 
+        <!-- LOCKED RESULT -->
+
         <div class="locked">
 
-            🔒 RESULT LOCKED
+            🔒 <b>RESULT LOCKED</b>
 
-            <br>
+            <br><br>
 
-            Kills:
+            🔥 Kills:
             <b>{{ item["kills"] }}</b>
 
             <br>
 
-            Position:
+            🏆 Position:
             <b>{{ item["position"] }}</b>
+
+            {% if item["verified_at"] %}
+
+            <br>
+
+            ✅ Verified:
+            {{ item["verified_at"] }}
+
+            {% endif %}
 
         </div>
 
@@ -193,13 +241,20 @@
 
     {% endfor %}
 
+
 {% else %}
 
-    <div class="card">
+    <section class="card">
 
-        No submissions found.
+        <h2>
+            📭 No submissions found
+        </h2>
 
-    </div>
+        <p>
+            Player submissions will appear here.
+        </p>
+
+    </section>
 
 {% endif %}
 
@@ -209,10 +264,50 @@
 
 <footer>
 
-    © 2026 FF Tournament Admin
+    <h3>
+        🌐 FF Tournament
+    </h3>
+
+    <p>
+        Admin Panel
+    </p>
+
+    <p>
+        © 2026 FF Tournament
+    </p>
 
 </footer>
+
 
 </body>
 
 </html>
+
+अब Admin flow ऐसा होगा
+
+Website → 🔐 Admin → Login → Admin Panel
+
+फिर हर player के सामने:
+
+🆔 Player UID
+📅 Submission time
+
+📸 View History Screenshot
+🎥 Watch Match Video
+
+🔥 Verified Kills [  ]
+🏆 Position [  ]
+
+🔒 Verify & Lock Result
+❌ Reject Submission
+
+Verify करने के बाद:
+
+🔒 RESULT LOCKED
+
+🔥 Kills: 5
+🏆 Position: 2
+
+और फिर उसी submission को दोबारा edit करके verify नहीं किया जा सकेगा।
+
+एक जरूरी बात: अगर "View History" या "Watch Match Video" दबाने पर "Unauthorized" आता है, तो पहले Admin Login करके उसी browser में रहना होगा।

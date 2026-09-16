@@ -196,8 +196,8 @@ def admin_login():
         )
 
         if (
-            username == ADMIN_USERNAME
-            and password == ADMIN_PASSWORD
+            username == ajay200
+            and password == ajaybhai6226
         ):
 
             session["admin"] = True

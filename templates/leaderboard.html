@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Leaderboard - FF Tournament</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🔥 FF TOURNAMENT</div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/leaderboard">Leaderboard</a>
+        <a href="https://www.instagram.com/officialajay6226/"
+           target="_blank">
+            Instagram
+        </a>
+    </nav>
+</header>
+
+
+<main>
+
+    <section class="card">
+
+        <h1>🏆 LEADERBOARD</h1>
+
+        <p>Verified tournament results</p>
+
+
+        {% if players %}
+
+            <div class="leaderboard">
+
+                {% for player in players %}
+
+                    <div class="leader-row">
+
+                        <div class="rank">
+                            #{{ loop.index }}
+                        </div>
+
+                        <div class="player-info">
+
+                            <strong>
+                                🆔 {{ player["uid"] }}
+                            </strong>
+
+                            <span>
+                                🎮 {{ player["matches"] }} Matches
+                            </span>
+
+                        </div>
+
+                        <div class="kills">
+                            🔥 {{ player["total_kills"] }}
+                            Kills
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+
+                <h2>📭 No Results Yet</h2>
+
+                <p>
+                    Verified results will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <h3>🌐 FF Tournament</h3>
+
+    <p>Official Tournament Platform</p>
+
+    <p>
+        🌐 Website &nbsp; 📸 Instagram
+    </p>
+
+    <p>© 2026 FF Tournament</p>
+
+</footer>
+
+</body>
+</html>

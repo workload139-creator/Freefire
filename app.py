@@ -6,10 +6,14 @@ from flask import (
 import sqlite3
 import os
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# CHANGE THIS
+# =========================
+# APP SETTINGS
+# =========================
+
 app.secret_key = "FF_TOURNAMENT_CHANGE_THIS_SECRET"
 
 DB = "tournament.db"
@@ -31,7 +35,6 @@ def get_db():
 
 
 def init_db():
-
     conn = get_db()
 
     conn.execute("""
@@ -50,6 +53,11 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+
+# IMPORTANT:
+# Render + Gunicorn ke liye database startup par initialize hoga.
+init_db()
 
 
 # =========================
@@ -73,14 +81,22 @@ def submit():
     history = request.files.get("history")
     video = request.files.get("video")
 
+    # UID check
     if not uid:
         flash("UID is required.")
         return redirect(url_for("home"))
 
+    # Files check
     if not history or not video:
         flash("History screenshot and video are required.")
         return redirect(url_for("home"))
 
+    # Empty file check
+    if not history.filename or not video.filename:
+        flash("Please select both files.")
+        return redirect(url_for("home"))
+
+    # Allowed formats
     image_extensions = {
         ".jpg",
         ".jpeg",
@@ -102,27 +118,35 @@ def submit():
         video.filename
     )[1].lower()
 
+    # Image validation
     if history_ext not in image_extensions:
-
         flash("Invalid history image.")
         return redirect(url_for("home"))
 
+    # Video validation
     if video_ext not in video_extensions:
-
         flash("Invalid video format.")
         return redirect(url_for("home"))
 
+    # Secure UID for filename
+    safe_uid = secure_filename(uid)
+
+    if not safe_uid:
+        flash("Invalid UID.")
+        return redirect(url_for("home"))
+
+    # Unique timestamp
     timestamp = datetime.now().strftime(
         "%Y%m%d%H%M%S%f"
     )
 
     history_name = (
-        f"{uid}_{timestamp}_history"
+        f"{safe_uid}_{timestamp}_history"
         f"{history_ext}"
     )
 
     video_name = (
-        f"{uid}_{timestamp}_video"
+        f"{safe_uid}_{timestamp}_video"
         f"{video_ext}"
     )
 
@@ -136,36 +160,56 @@ def submit():
         video_name
     )
 
-    history.save(history_path)
-    video.save(video_path)
+    try:
 
-    conn = get_db()
+        # Save files
+        history.save(history_path)
+        video.save(video_path)
 
-    conn.execute("""
-        INSERT INTO submissions
-        (
+        # Save database record
+        conn = get_db()
+
+        conn.execute("""
+            INSERT INTO submissions
+            (
+                uid,
+                history_file,
+                video_file,
+                submitted_at,
+                status
+            )
+            VALUES (?, ?, ?, ?, ?)
+        """, (
             uid,
-            history_file,
-            video_file,
-            submitted_at,
-            status
+            history_name,
+            video_name,
+            datetime.now().isoformat(),
+            "Pending"
+        ))
+
+        conn.commit()
+        conn.close()
+
+        flash(
+            "Submission received successfully. "
+            "You cannot edit it after submission."
         )
-        VALUES (?, ?, ?, ?, ?)
-    """, (
-        uid,
-        history_name,
-        video_name,
-        datetime.now().isoformat(),
-        "Pending"
-    ))
 
-    conn.commit()
-    conn.close()
+    except Exception as e:
 
-    flash(
-        "Submission received. "
-        "You cannot edit it after submission."
-    )
+        # Agar database/file save me error aaye
+        # to half-uploaded files remove karne ki koshish
+        if os.path.exists(history_path):
+            os.remove(history_path)
+
+        if os.path.exists(video_path):
+            os.remove(video_path)
+
+        print("SUBMISSION ERROR:", repr(e))
+
+        flash(
+            "Submission failed. Please try again."
+        )
 
     return redirect(url_for("home"))
 
@@ -188,16 +232,18 @@ def admin_login():
         username = request.form.get(
             "username",
             ""
-        )
+        ).strip()
 
         password = request.form.get(
             "password",
             ""
         )
 
+        # FIXED:
+        # Strings ko quotes ke andar compare karna hai.
         if (
-            username == ajay200
-            and password == ajaybhai6226
+            username == ADMIN_USERNAME
+            and password == ADMIN_PASSWORD
         ):
 
             session["admin"] = True
@@ -267,12 +313,15 @@ def verify_submission(submission_id):
     )
 
     try:
+
         kills = int(kills)
         position = int(position)
 
     except ValueError:
 
-        flash("Kills and position must be numbers.")
+        flash(
+            "Kills and position must be numbers."
+        )
 
         return redirect(
             url_for("admin_panel")
@@ -286,7 +335,6 @@ def verify_submission(submission_id):
 
     conn = get_db()
 
-    # Only Pending records can be verified.
     cursor = conn.execute("""
         UPDATE submissions
 
@@ -403,8 +451,7 @@ def leaderboard():
     conn.close()
 
     return render_template(
-        "admin.html",
-        submissions=[],
+        "leaderboard.html",
         players=players
     )
 
@@ -424,12 +471,10 @@ def admin_logout():
 
 
 # =========================
-# START
+# START LOCAL SERVER
 # =========================
 
 if __name__ == "__main__":
-
-    init_db()
 
     app.run(
         host="0.0.0.0",

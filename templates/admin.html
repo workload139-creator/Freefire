@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Panel</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🔐 ADMIN PANEL
+    </div>
+
+    <nav>
+
+        <a href="/">
+            Home
+        </a>
+
+        <a href="/leaderboard">
+            Leaderboard
+        </a>
+
+        <a href="/admin/logout">
+            Logout
+        </a>
+
+    </nav>
+
+</header>
+
+
+<main>
+
+<h1>
+    📋 Player Submissions
+</h1>
+
+
+{% with messages = get_flashed_messages() %}
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="message">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+{% if submissions %}
+
+    {% for item in submissions %}
+
+    <section class="admin-card">
+
+        <div class="admin-title">
+
+            <h2>
+                🆔 {{ item["uid"] }}
+            </h2>
+
+            <span class="status">
+                {{ item["status"] }}
+            </span>
+
+        </div>
+
+
+        <p>
+            📅 Submitted:
+            {{ item["submitted_at"] }}
+        </p>
+
+
+        <div class="proof-buttons">
+
+            <a
+                href="/uploads/{{ item['history_file'] }}"
+                target="_blank"
+                class="link-btn"
+            >
+                📸 View History
+            </a>
+
+
+            <a
+                href="/uploads/{{ item['video_file'] }}"
+                target="_blank"
+                class="link-btn"
+            >
+                🎥 View Video
+            </a>
+
+        </div>
+
+
+        {% if item["status"] == "Pending" %}
+
+        <form
+            method="POST"
+            action="/admin/verify/{{ item['id'] }}"
+        >
+
+            <label>
+                🔢 Verified Kills
+            </label>
+
+            <input
+                type="number"
+                name="kills"
+                min="0"
+                required
+            >
+
+
+            <label>
+                🏆 Position
+            </label>
+
+            <input
+                type="number"
+                name="position"
+                min="0"
+                required
+            >
+
+
+            <button type="submit">
+                ✅ Verify & Lock
+            </button>
+
+        </form>
+
+
+        <form
+            method="POST"
+            action="/admin/reject/{{ item['id'] }}"
+        >
+
+            <button
+                type="submit"
+                class="reject"
+            >
+                ❌ Reject
+            </button>
+
+        </form>
+
+        {% else %}
+
+        <div class="locked">
+
+            🔒 RESULT LOCKED
+
+            <br>
+
+            Kills:
+            <b>{{ item["kills"] }}</b>
+
+            <br>
+
+            Position:
+            <b>{{ item["position"] }}</b>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+    {% endfor %}
+
+{% else %}
+
+    <div class="card">
+
+        No submissions found.
+
+    </div>
+
+{% endif %}
+
+
+</main>
+
+
+<footer>
+
+    © 2026 FF Tournament Admin
+
+</footer>
+
+</body>
+
+</html>

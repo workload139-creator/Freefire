@@ -1,31 +1,37 @@
-const form = document.getElementById("submissionForm");
-const button = document.getElementById("submitBtn");
+const form = document.getElementById(
+    "submissionForm"
+);
 
-form.addEventListener("submit", function (event) {
+if (form) {
 
-    const uid = document.getElementById("uid").value.trim();
-    const history = document.getElementById("history").files.length;
-    const video = document.getElementById("video").files.length;
-    const confirm = document.getElementById("confirm").checked;
+    form.addEventListener(
+        "submit",
+        function(event) {
 
-    if (!uid || !history || !video || !confirm) {
-        event.preventDefault();
+            const confirmed = confirm(
+                "Submit karne ke baad UID, History aur Video edit nahi kiye ja sakte.\n\nKya aap sure hain?"
+            );
 
-        alert("Please complete all required fields.");
+            if (!confirmed) {
 
-        return;
-    }
+                event.preventDefault();
 
-    const ok = confirm(
-        "Submit karne ke baad information edit nahi ki ja sakti.\n\nContinue?"
+                return;
+            }
+
+            const button =
+                document.getElementById(
+                    "submitBtn"
+                );
+
+            if (button) {
+
+                button.disabled = true;
+
+                button.innerText =
+                    "🔒 Submitting...";
+            }
+
+        }
     );
-
-    if (!ok) {
-        event.preventDefault();
-        return;
-    }
-
-    button.disabled = true;
-    button.innerText = "🔒 Submitting...";
-
-});
+}

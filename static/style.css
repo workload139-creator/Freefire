@@ -1,0 +1,244 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #101010;
+    color: white;
+    min-height: 100vh;
+}
+
+
+header {
+    background: #181818;
+    padding: 18px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 18px;
+}
+
+
+main {
+    width: 92%;
+    max-width: 700px;
+    margin: auto;
+    padding: 35px 0;
+}
+
+
+.hero {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.hero h1 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    color: #bbb;
+}
+
+
+.notice {
+    margin-top: 20px;
+    padding: 14px;
+    border: 1px solid #555;
+    border-radius: 10px;
+    background: #1d1d1d;
+}
+
+
+.card {
+    background: #181818;
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid #333;
+}
+
+
+.card h2 {
+    margin-bottom: 25px;
+}
+
+
+label {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+
+input[type="text"],
+input[type="file"] {
+    width: 100%;
+    padding: 13px;
+    background: #101010;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 8px;
+}
+
+
+small {
+    color: #999;
+    display: block;
+    margin-top: 6px;
+}
+
+
+.warning {
+    margin-top: 25px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #292929;
+    border: 1px solid #555;
+}
+
+
+.warning p {
+    margin-top: 7px;
+    color: #ccc;
+}
+
+
+.rules {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #202020;
+}
+
+
+.rules h3 {
+    margin-bottom: 8px;
+}
+
+
+.rules p {
+    color: #ccc;
+    margin-top: 8px;
+}
+
+
+.check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: normal;
+}
+
+
+.check input {
+    width: 18px;
+    height: 18px;
+}
+
+
+button {
+    width: 100%;
+    margin-top: 25px;
+    padding: 15px;
+    border: none;
+    border-radius: 9px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    background: white;
+    color: black;
+}
+
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+.message {
+    padding: 13px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background: #292929;
+}
+
+
+.info {
+    margin-top: 25px;
+    padding: 25px;
+    text-align: center;
+    background: #181818;
+    border-radius: 15px;
+    border: 1px solid #333;
+}
+
+
+.info p {
+    color: #aaa;
+    margin: 10px;
+}
+
+
+.link-btn {
+    display: inline-block;
+    margin: 8px;
+    padding: 11px 18px;
+    border-radius: 8px;
+    background: #252525;
+    color: white;
+    text-decoration: none;
+}
+
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #777;
+    font-size: 14px;
+}
+
+
+@media (max-width: 600px) {
+
+    header {
+        padding: 15px;
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    nav a {
+        margin-left: 8px;
+        font-size: 14px;
+    }
+
+    main {
+        width: 94%;
+    }
+
+    .hero h1 {
+        font-size: 27px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+}

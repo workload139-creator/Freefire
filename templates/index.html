@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FF Tournament - Result Submission</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🔥 FF TOURNAMENT
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+
+        <a href="https://www.instagram.com/officialajay6226/?stkn=c2d5N2lhdmh0bGt0"
+           target="_blank">
+            Instagram
+        </a>
+    </nav>
+
+</header>
+
+
+<main>
+
+    <section class="hero">
+
+        <h1>🏆 MATCH RESULT</h1>
+
+        <p>
+            Submit your match proof after the game.
+        </p>
+
+        <div class="notice">
+            ⚠️ Once submitted, the information cannot be edited.
+        </div>
+
+    </section>
+
+
+    <section class="card">
+
+        <h2>📋 Submit Match Proof</h2>
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="message">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <form
+            id="submissionForm"
+            action="/submit"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            <label>
+                🆔 Player UID
+            </label>
+
+            <input
+                type="text"
+                name="uid"
+                id="uid"
+                placeholder="Enter your Free Fire UID"
+                required
+            >
+
+
+            <label>
+                📸 Game History / Result Screenshot
+            </label>
+
+            <input
+                type="file"
+                name="history"
+                id="history"
+                accept="image/*"
+                required
+            >
+
+            <small>
+                Upload clear game history/result screenshot.
+            </small>
+
+
+            <label>
+                🎥 Match Video
+            </label>
+
+            <input
+                type="file"
+                name="video"
+                id="video"
+                accept="video/*"
+                required
+            >
+
+            <small>
+                Upload the match recording/video.
+            </small>
+
+
+            <div class="warning">
+
+                ⚠️ <strong>NO EDIT WARNING</strong>
+
+                <p>
+                    Submission ke baad UID, screenshot ya video
+                    change nahi kiya ja sakta.
+                </p>
+
+            </div>
+
+
+            <div class="rules">
+
+                <h3>⏱️ Submission Rule</h3>
+
+                <p>
+                    Match khatam hone ke baad result proof
+                    <strong>5 minutes ke andar</strong> submit karein.
+                </p>
+
+                <p>
+                    5 minutes ke baad ki submission
+                    tournament rules ke according reject ho sakti hai.
+                </p>
+
+            </div>
+
+
+            <label class="check">
+
+                <input
+                    type="checkbox"
+                    id="confirm"
+                    required
+                >
+
+                I confirm that the information is correct.
+
+            </label>
+
+
+            <button type="submit" id="submitBtn">
+
+                🔒 Submit & Lock
+
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <section class="info">
+
+        <h2>🌐 FF Tournament</h2>
+
+        <p>
+            Official Tournament Website
+        </p>
+
+        <a
+            href="https://freefire-touranament.onrender.com"
+            target="_blank"
+            class="link-btn"
+        >
+            🌐 Open Website
+        </a>
+
+        <a
+            href="https://www.instagram.com/officialajay6226/?stkn=c2d5N2lhdmh0bGt0"
+            target="_blank"
+            class="link-btn"
+        >
+            📸 Instagram
+        </a>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    © 2026 FF Tournament
+
+    <br>
+
+    Independent community tournament platform.
+
+</footer>
+
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>

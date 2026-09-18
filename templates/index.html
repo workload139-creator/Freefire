@@ -114,58 +114,40 @@
         >
 
 
-        <!-- PLAYER PAYMENT QR -->
+        <!-- KILL REWARD -->
 
-        <div class="payment-info">
+        <div class="reward-info">
 
             <h3>
-                💳 PAYMENT QR
+                💰 WIN REWARD
             </h3>
-
-            <p>
-                Match verify hone ke baad aapko
-                <strong>Kill Reward</strong> diya jayega.
-            </p>
 
             <p>
                 🔫 <strong>1 Kill = ₹5</strong>
             </p>
 
             <p>
-                💰 Example:
+                Match verify hone ke baad
+                verified kills ke according
+                reward diya jayega.
+            </p>
+
+            <p>
+                🧮 Example:
                 <strong>5 Kills = ₹25</strong>
             </p>
 
             <p>
-                📱 <strong>Apna UPI QR Code upload karein.</strong>
+                💳 Payment ke liye Admin winner
+                se QR / UPI details lega.
             </p>
 
             <p>
-                Aapke verified reward ka payment
-                isi QR Code par bheja jayega.
-            </p>
-
-            <p>
-                ⚠️ QR Code clear aur scan hone layak hona chahiye.
+                ⚠️ Reward sirf verified result
+                ke according diya jayega.
             </p>
 
         </div>
-
-
-        <label>
-            📱 Your UPI QR Code
-        </label>
-
-        <input
-            type="file"
-            name="qr"
-            accept="image/*"
-            required
-        >
-
-        <small>
-            Apna payment receive karne wala UPI QR Code upload karein.
-        </small>
 
 
         <!-- GAME HISTORY -->
@@ -177,15 +159,29 @@
             </h3>
 
             <p>
-                Game History screenshot Admin ko match result
-                verify karne ke liye chahiye.
+                Game History screenshot Admin ko
+                tumhara match result verify karne
+                ke liye chahiye.
             </p>
 
             <ul>
-                <li>🆔 UID verify karne ke liye</li>
-                <li>🏆 Match result check karne ke liye</li>
-                <li>🔫 Kills verify karne ke liye</li>
-                <li>⏱️ Match ki details check karne ke liye</li>
+
+                <li>
+                    🆔 Free Fire UID verify karne ke liye
+                </li>
+
+                <li>
+                    🏆 Match result check karne ke liye
+                </li>
+
+                <li>
+                    🔫 Kills verify karne ke liye
+                </li>
+
+                <li>
+                    📊 Position/result check karne ke liye
+                </li>
+
             </ul>
 
         </div>
@@ -216,19 +212,32 @@
             </h3>
 
             <p>
-                Match video Admin ko gameplay aur match
-                verify karne ke liye chahiye.
+                Match video Admin ko gameplay aur
+                match proof verify karne ke liye chahiye.
             </p>
 
             <ul>
-                <li>🎮 Gameplay verify karne ke liye</li>
-                <li>🔫 Kills check karne ke liye</li>
-                <li>🛡️ Fair play verify karne ke liye</li>
-                <li>🚫 Fake proof check karne ke liye</li>
+
+                <li>
+                    🎮 Gameplay verify karne ke liye
+                </li>
+
+                <li>
+                    🔫 Kills check karne ke liye
+                </li>
+
+                <li>
+                    🛡️ Fair play verify karne ke liye
+                </li>
+
+                <li>
+                    🚫 Fake proof check karne ke liye
+                </li>
+
             </ul>
 
             <p>
-                ⏱️ <strong>Maximum video length: 20 seconds</strong>
+                ⏱️ <strong>Maximum 20 seconds</strong>
             </p>
 
         </div>
@@ -247,21 +256,23 @@
         >
 
         <small>
-            Maximum 20 seconds ki clear match recording upload karein.
+            Maximum 20 seconds ki clear match
+            recording upload karein.
         </small>
 
         <p id="videoMessage"></p>
 
 
-        <!-- IMPORTANT RULES -->
+        <!-- NO EDIT -->
 
         <div class="warning">
 
             ⚠️ <b>NO EDIT</b>
 
             <p>
-                Submit karne ke baad UID, QR Code,
-                History aur Video change nahi kiye ja sakte.
+                Submit karne ke baad UID,
+                History aur Video change nahi
+                kiye ja sakte.
             </p>
 
         </div>
@@ -277,12 +288,13 @@
 
             <p>
                 Match khatam hone ke baad proof
-                <strong>5 minutes</strong> ke andar submit karein.
+                <strong>5 minutes</strong> ke andar
+                submit karein.
             </p>
 
             <p>
-                Late submission tournament rules ke
-                according reject ho sakti hai.
+                Late submission tournament rules
+                ke according reject ho sakti hai.
             </p>
 
         </div>
@@ -369,25 +381,35 @@
 
 <script>
 
-const videoInput = document.getElementById("videoInput");
-const videoMessage = document.getElementById("videoMessage");
+const videoInput =
+    document.getElementById("videoInput");
+
+const videoMessage =
+    document.getElementById("videoMessage");
+
 
 videoInput.addEventListener("change", function () {
 
     const file = this.files[0];
 
     if (!file) {
+
         videoMessage.textContent = "";
+
         return;
     }
 
-    const video = document.createElement("video");
+
+    const video =
+        document.createElement("video");
 
     video.preload = "metadata";
+
 
     video.onloadedmetadata = function () {
 
         window.URL.revokeObjectURL(video.src);
+
 
         if (video.duration > 20) {
 
@@ -406,11 +428,14 @@ videoInput.addEventListener("change", function () {
                 " seconds";
 
             videoMessage.style.color = "green";
+
         }
 
     };
 
-    video.src = URL.createObjectURL(file);
+
+    video.src =
+        URL.createObjectURL(file);
 
 });
 

@@ -2,21 +2,13 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>FF Tournament</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
-
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
@@ -28,10 +20,7 @@
     </div>
 
     <nav>
-
-        <a href="/">
-            Home
-        </a>
+        <a href="/">Home</a>
 
         <a href="/leaderboard">
             Leaderboard
@@ -41,19 +30,20 @@
             🔐 Admin
         </a>
 
-        <a
-            href="https://www.instagram.com/officialajay6226/?stkn=c2d5N2lhdmh0bGt0"
-            target="_blank"
-        >
+        <a href="https://www.instagram.com/officialajay6226/?stkn=c2d5N2lhdmh0bGt0"
+           target="_blank">
             Instagram
         </a>
-
     </nav>
 
 </header>
 
 
 <main>
+
+<!-- =========================
+     HERO
+========================= -->
 
 <section class="hero">
 
@@ -68,28 +58,36 @@
 </section>
 
 
+<!-- =========================
+     FLASH MESSAGE
+========================= -->
+
+{% with messages = get_flashed_messages() %}
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="message">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+<!-- =========================
+     SUBMISSION FORM
+========================= -->
+
 <section class="card">
 
     <h2>
         📋 Result Submission
     </h2>
-
-
-    {% with messages = get_flashed_messages() %}
-
-        {% if messages %}
-
-            {% for message in messages %}
-
-                <div class="message">
-                    {{ message }}
-                </div>
-
-            {% endfor %}
-
-        {% endif %}
-
-    {% endwith %}
 
 
     <form
@@ -109,86 +107,15 @@
         <input
             type="text"
             name="uid"
-            placeholder="Enter your Free Fire UID"
+            placeholder="Enter Free Fire UID"
             required
         >
 
 
-        <!-- KILL REWARD -->
-
-        <div class="reward-info">
-
-            <h3>
-                💰 WIN REWARD
-            </h3>
-
-            <p>
-                🔫 <strong>1 Kill = ₹5</strong>
-            </p>
-
-            <p>
-                Match verify hone ke baad
-                verified kills ke according
-                reward diya jayega.
-            </p>
-
-            <p>
-                🧮 Example:
-                <strong>5 Kills = ₹25</strong>
-            </p>
-
-            <p>
-                💳 Payment ke liye Admin winner
-                se QR / UPI details lega.
-            </p>
-
-            <p>
-                ⚠️ Reward sirf verified result
-                ke according diya jayega.
-            </p>
-
-        </div>
-
-
         <!-- GAME HISTORY -->
 
-        <div class="proof-info">
-
-            <h3>
-                📸 GAME HISTORY — Kyon chahiye?
-            </h3>
-
-            <p>
-                Game History screenshot Admin ko
-                tumhara match result verify karne
-                ke liye chahiye.
-            </p>
-
-            <ul>
-
-                <li>
-                    🆔 Free Fire UID verify karne ke liye
-                </li>
-
-                <li>
-                    🏆 Match result check karne ke liye
-                </li>
-
-                <li>
-                    🔫 Kills verify karne ke liye
-                </li>
-
-                <li>
-                    📊 Position/result check karne ke liye
-                </li>
-
-            </ul>
-
-        </div>
-
-
         <label>
-            📸 Game History / Result Screenshot
+            📸 Game History
         </label>
 
         <input
@@ -203,45 +130,41 @@
         </small>
 
 
-        <!-- MATCH VIDEO -->
-
         <div class="proof-info">
 
             <h3>
-                🎥 MATCH VIDEO — Kyon chahiye?
+                📸 GAME HISTORY — Kyon chahiye?
             </h3>
 
             <p>
-                Match video Admin ko gameplay aur
-                match proof verify karne ke liye chahiye.
+                Admin ko match result verify karne ke liye
+                Game History screenshot chahiye.
             </p>
 
             <ul>
 
                 <li>
-                    🎮 Gameplay verify karne ke liye
+                    🆔 Free Fire UID verify
                 </li>
 
                 <li>
-                    🔫 Kills check karne ke liye
+                    🏆 Match result check
                 </li>
 
                 <li>
-                    🛡️ Fair play verify karne ke liye
+                    🔫 Kills verify
                 </li>
 
                 <li>
-                    🚫 Fake proof check karne ke liye
+                    📊 Position check
                 </li>
 
             </ul>
 
-            <p>
-                ⏱️ <strong>Maximum 20 seconds</strong>
-            </p>
-
         </div>
 
+
+        <!-- MATCH VIDEO -->
 
         <label>
             🎥 Match Video
@@ -256,29 +179,125 @@
         >
 
         <small>
-            Maximum 20 seconds ki clear match
-            recording upload karein.
+            Maximum 20 seconds ki match recording upload karein.
         </small>
 
         <p id="videoMessage"></p>
 
 
-        <!-- NO EDIT -->
+        <div class="proof-info">
 
-        <div class="warning">
-
-            ⚠️ <b>NO EDIT</b>
+            <h3>
+                🎥 MATCH VIDEO — Kyon chahiye?
+            </h3>
 
             <p>
-                Submit karne ke baad UID,
-                History aur Video change nahi
-                kiye ja sakte.
+                Match video gameplay aur match proof verify
+                karne ke liye chahiye.
+            </p>
+
+            <ul>
+
+                <li>
+                    🎮 Gameplay verify
+                </li>
+
+                <li>
+                    🔫 Kills check
+                </li>
+
+                <li>
+                    🛡️ Fair play verify
+                </li>
+
+                <li>
+                    🚫 Fake proof check
+                </li>
+
+            </ul>
+
+            <p>
+                ⏱️ <strong>Maximum 20 seconds</strong>
             </p>
 
         </div>
 
 
-        <!-- 5 MINUTE RULE -->
+        <!-- =========================
+             QR CODE
+        ========================= -->
+
+        <div class="reward-info">
+
+            <h3>
+                💳 PAYMENT QR
+            </h3>
+
+            <p>
+                Agar aap reward ke liye QR payment lena chahte hain,
+                apna valid payment QR upload karein.
+            </p>
+
+            <p>
+                ⚠️ QR image clear aur readable honi chahiye.
+            </p>
+
+        </div>
+
+
+        <label>
+            🖼️ Payment QR Code
+        </label>
+
+        <input
+            type="file"
+            name="qr"
+            id="qrInput"
+            accept="image/*"
+            required
+        >
+
+        <small>
+            JPG, PNG ya WEBP QR image upload karein.
+        </small>
+
+        <p id="qrMessage"></p>
+
+
+        <!-- =========================
+             REWARD
+        ========================= -->
+
+        <div class="reward-info">
+
+            <h3>
+                💰 WIN REWARD
+            </h3>
+
+            <p>
+                🔫 <strong>1 Kill = ₹5</strong>
+            </p>
+
+            <p>
+                Match verify hone ke baad
+                verified kills ke according reward diya jayega.
+            </p>
+
+            <p>
+                🧮 Example:
+                <strong>5 Kills = ₹25</strong>
+            </p>
+
+            <p>
+                ⚠️ Reward sirf verified result ke according diya jayega.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             5 MINUTE RULE
+        ========================= -->
 
         <div class="rules">
 
@@ -288,13 +307,29 @@
 
             <p>
                 Match khatam hone ke baad proof
-                <strong>5 minutes</strong> ke andar
-                submit karein.
+                5 minutes ke andar submit karein.
             </p>
 
             <p>
-                Late submission tournament rules
-                ke according reject ho sakti hai.
+                Late submission tournament rules ke
+                according reject ho sakti hai.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             NO EDIT
+        ========================= -->
+
+        <div class="warning">
+
+            ⚠️ <b>NO EDIT</b>
+
+            <p>
+                Submit karne ke baad UID,
+                History, Video aur QR change nahi
+                kiye ja sakte.
             </p>
 
         </div>
@@ -309,26 +344,30 @@
                 required
             >
 
-            I confirm that my information is correct.
+            I confirm that my information and
+            payment QR are correct.
 
         </label>
 
+
+        <!-- SUBMIT -->
 
         <button
             type="submit"
             id="submitBtn"
         >
-
             🔒 Submit & Lock
-
         </button>
+
 
     </form>
 
 </section>
 
 
-<!-- WEBSITE INFO -->
+<!-- =========================
+     LINKS
+========================= -->
 
 <section class="info">
 
@@ -379,7 +418,16 @@
 </footer>
 
 
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
 <script>
+
+
+// =========================
+// VIDEO 20 SECOND CHECK
+// =========================
 
 const videoInput =
     document.getElementById("videoInput");
@@ -388,74 +436,139 @@ const videoMessage =
     document.getElementById("videoMessage");
 
 
-videoInput.addEventListener("change", function () {
+videoInput.addEventListener(
+    "change",
+    function () {
 
-    const file = this.files[0];
+        const file = this.files[0];
 
-    if (!file) {
+        if (!file) {
 
-        videoMessage.textContent = "";
+            videoMessage.textContent = "";
 
-        return;
-    }
-
-
-    const video =
-        document.createElement("video");
-
-    video.preload = "metadata";
-
-
-    video.onloadedmetadata = function () {
-
-        window.URL.revokeObjectURL(video.src);
-
-
-        if (video.duration > 20) {
-
-            videoMessage.textContent =
-                "❌ Video 20 seconds se zyada hai. Please 20 seconds ya usse kam video upload karein.";
-
-            videoMessage.style.color = "red";
-
-            videoInput.value = "";
-
-        } else {
-
-            videoMessage.textContent =
-                "✅ Video accepted: " +
-                video.duration.toFixed(1) +
-                " seconds";
-
-            videoMessage.style.color = "green";
-
+            return;
         }
 
-    };
+
+        const video =
+            document.createElement("video");
 
 
-    video.src =
-        URL.createObjectURL(file);
+        video.preload = "metadata";
 
-});
 
+        video.onloadedmetadata = function () {
+
+            window.URL.revokeObjectURL(
+                video.src
+            );
+
+
+            if (video.duration > 20) {
+
+                videoMessage.textContent =
+                    "❌ Video 20 seconds se zyada hai. 20 seconds ya usse kam video upload karein.";
+
+                videoMessage.style.color =
+                    "red";
+
+                videoInput.value = "";
+
+            } else {
+
+                videoMessage.textContent =
+                    "✅ Video accepted: "
+                    + video.duration.toFixed(1)
+                    + " seconds";
+
+                videoMessage.style.color =
+                    "green";
+            }
+
+        };
+
+
+        video.src =
+            URL.createObjectURL(file);
+
+    }
+);
+
+
+// =========================
+// QR IMAGE CHECK
+// =========================
+
+const qrInput =
+    document.getElementById("qrInput");
+
+const qrMessage =
+    document.getElementById("qrMessage");
+
+
+qrInput.addEventListener(
+    "change",
+    function () {
+
+        const file = this.files[0];
+
+
+        if (!file) {
+
+            qrMessage.textContent = "";
+
+            return;
+        }
+
+
+        if (!file.type.startsWith("image/")) {
+
+            qrMessage.textContent =
+                "❌ Please select a QR image.";
+
+            qrMessage.style.color =
+                "red";
+
+            qrInput.value = "";
+
+            return;
+        }
+
+
+        qrMessage.textContent =
+            "✅ QR image selected.";
+
+        qrMessage.style.color =
+            "green";
+
+    }
+);
+
+
+// =========================
+// SUBMIT LOCK
+// =========================
 
 document
     .getElementById("submissionForm")
-    .addEventListener("submit", function () {
+    .addEventListener(
+        "submit",
+        function () {
 
-        const button =
-            document.getElementById("submitBtn");
+            const button =
+                document.getElementById("submitBtn");
 
-        button.disabled = true;
 
-        button.textContent =
-            "⏳ Submitting...";
+            button.disabled = true;
 
-    });
+
+            button.textContent =
+                "⏳ Submitting...";
+
+        }
+    );
 
 </script>
-
 
 </body>
 

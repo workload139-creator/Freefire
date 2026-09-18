@@ -27,8 +27,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# Upload limit: 50 MB
-# 20-second compressed video ke liye enough hona chahiye.
+# Maximum total upload size = 50 MB
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 
@@ -60,6 +59,8 @@ def init_db():
 
             video_file TEXT NOT NULL,
 
+            qr_file TEXT,
+
             submitted_at TEXT NOT NULL,
 
             status TEXT DEFAULT 'Pending',
@@ -72,6 +73,26 @@ def init_db():
 
         )
     """)
+
+    # ---------------------------------
+    # Old database me QR column add karo
+    # ---------------------------------
+
+    columns = conn.execute(
+        "PRAGMA table_info(submissions)"
+    ).fetchall()
+
+    column_names = [
+        column["name"]
+        for column in columns
+    ]
+
+    if "qr_file" not in column_names:
+
+        conn.execute("""
+            ALTER TABLE submissions
+            ADD COLUMN qr_file TEXT
+        """)
 
     conn.commit()
 
@@ -111,10 +132,14 @@ def submit():
         "video"
     )
 
+    qr = request.files.get(
+        "qr"
+    )
 
-    # -------------------------
+
+    # =========================
     # UID CHECK
-    # -------------------------
+    # =========================
 
     if not uid:
 
@@ -127,14 +152,14 @@ def submit():
         )
 
 
-    # -------------------------
+    # =========================
     # FILE CHECK
-    # -------------------------
+    # =========================
 
-    if not history or not video:
+    if not history or not video or not qr:
 
         flash(
-            "Game History screenshot and Match Video are required."
+            "Game History, Match Video and Payment QR are required."
         )
 
         return redirect(
@@ -142,10 +167,14 @@ def submit():
         )
 
 
-    if not history.filename or not video.filename:
+    if (
+        not history.filename
+        or not video.filename
+        or not qr.filename
+    ):
 
         flash(
-            "Please select both files."
+            "Please select all required files."
         )
 
         return redirect(
@@ -153,9 +182,9 @@ def submit():
         )
 
 
-    # -------------------------
+    # =========================
     # ALLOWED EXTENSIONS
-    # -------------------------
+    # =========================
 
     image_extensions = {
         ".jpg",
@@ -163,7 +192,6 @@ def submit():
         ".png",
         ".webp"
     }
-
 
     video_extensions = {
         ".mp4",
@@ -182,9 +210,14 @@ def submit():
     )[1].lower()
 
 
-    # -------------------------
-    # IMAGE VALIDATION
-    # -------------------------
+    qr_ext = os.path.splitext(
+        qr.filename
+    )[1].lower()
+
+
+    # =========================
+    # HISTORY VALIDATION
+    # =========================
 
     if history_ext not in image_extensions:
 
@@ -197,9 +230,9 @@ def submit():
         )
 
 
-    # -------------------------
+    # =========================
     # VIDEO VALIDATION
-    # -------------------------
+    # =========================
 
     if video_ext not in video_extensions:
 
@@ -212,9 +245,24 @@ def submit():
         )
 
 
-    # -------------------------
+    # =========================
+    # QR VALIDATION
+    # =========================
+
+    if qr_ext not in image_extensions:
+
+        flash(
+            "Invalid Payment QR image format."
+        )
+
+        return redirect(
+            url_for("home")
+        )
+
+
+    # =========================
     # SECURE UID
-    # -------------------------
+    # =========================
 
     safe_uid = secure_filename(uid)
 
@@ -230,9 +278,9 @@ def submit():
         )
 
 
-    # -------------------------
+    # =========================
     # UNIQUE FILE NAME
-    # -------------------------
+    # =========================
 
     timestamp = datetime.now().strftime(
         "%Y%m%d%H%M%S%f"
@@ -251,6 +299,12 @@ def submit():
     )
 
 
+    qr_name = (
+        f"{safe_uid}_{timestamp}_qr"
+        f"{qr_ext}"
+    )
+
+
     history_path = os.path.join(
         UPLOAD_FOLDER,
         history_name
@@ -263,25 +317,34 @@ def submit():
     )
 
 
+    qr_path = os.path.join(
+        UPLOAD_FOLDER,
+        qr_name
+    )
+
+
     try:
 
-        # -------------------------
+        # =========================
         # SAVE FILES
-        # -------------------------
+        # =========================
 
         history.save(
             history_path
         )
 
-
         video.save(
             video_path
         )
 
+        qr.save(
+            qr_path
+        )
 
-        # -------------------------
+
+        # =========================
         # DATABASE
-        # -------------------------
+        # =========================
 
         conn = get_db()
 
@@ -292,13 +355,14 @@ def submit():
                 uid,
                 history_file,
                 video_file,
+                qr_file,
                 submitted_at,
                 status,
                 kills,
                 position
             )
 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (
 
             uid,
@@ -306,6 +370,8 @@ def submit():
             history_name,
 
             video_name,
+
+            qr_name,
 
             datetime.now().isoformat(),
 
@@ -325,13 +391,15 @@ def submit():
 
         flash(
             "✅ Submission received successfully. "
-            "Your result is locked after submission."
+            "UID, History, Video and QR are now locked."
         )
 
 
     except Exception as e:
 
-        # Remove partially uploaded files
+        # =========================
+        # CLEANUP
+        # =========================
 
         if os.path.exists(history_path):
 
@@ -341,6 +409,11 @@ def submit():
         if os.path.exists(video_path):
 
             os.remove(video_path)
+
+
+        if os.path.exists(qr_path):
+
+            os.remove(qr_path)
 
 
         print(
@@ -367,7 +440,7 @@ def submit():
 def file_too_large(error):
 
     flash(
-        "❌ File is too large. Maximum total upload size is 50 MB."
+        "❌ Total upload size is too large. Maximum is 50 MB."
     )
 
     return redirect(
@@ -390,15 +463,12 @@ ADMIN_PASSWORD = "CHANGE_THIS_PASSWORD"
 )
 def admin_login():
 
-
     if request.method == "POST":
-
 
         username = request.form.get(
             "username",
             ""
         ).strip()
-
 
         password = request.form.get(
             "password",
@@ -411,9 +481,7 @@ def admin_login():
             and password == ADMIN_PASSWORD
         ):
 
-
             session["admin"] = True
-
 
             return redirect(
                 url_for("admin_panel")
@@ -436,7 +504,6 @@ def admin_login():
 
 @app.route("/admin")
 def admin_panel():
-
 
     if not session.get("admin"):
 
@@ -476,7 +543,6 @@ def verify_submission(
     submission_id
 ):
 
-
     if not session.get("admin"):
 
         return redirect(
@@ -496,9 +562,9 @@ def verify_submission(
     )
 
 
-    # -------------------------
+    # =========================
     # NUMBER VALIDATION
-    # -------------------------
+    # =========================
 
     try:
 
@@ -517,9 +583,9 @@ def verify_submission(
         )
 
 
-    # -------------------------
+    # =========================
     # RANGE VALIDATION
-    # -------------------------
+    # =========================
 
     if kills < 0:
 
@@ -565,9 +631,9 @@ def verify_submission(
         )
 
 
-    # -------------------------
+    # =========================
     # REWARD
-    # -------------------------
+    # =========================
 
     reward = kills * 5
 
@@ -580,9 +646,9 @@ def verify_submission(
     )
 
 
-    # -------------------------
+    # =========================
     # LOCK RESULT
-    # -------------------------
+    # =========================
 
     conn = get_db()
 
@@ -617,21 +683,18 @@ def verify_submission(
     conn.close()
 
 
-    # -------------------------
+    # =========================
     # RESULT
-    # -------------------------
+    # =========================
 
     if cursor.rowcount == 1:
-
 
         flash(
             f"✅ Result verified and locked. "
             f"Reward: ₹{reward}"
         )
 
-
     else:
-
 
         flash(
             "This result is already locked "
@@ -655,7 +718,6 @@ def verify_submission(
 def reject_submission(
     submission_id
 ):
-
 
     if not session.get("admin"):
 
@@ -719,9 +781,8 @@ def reject_submission(
 )
 def uploaded_file(filename):
 
-
     # Only logged-in Admin
-    # can see player proofs.
+    # can view player files.
 
     if not session.get("admin"):
 
@@ -740,7 +801,6 @@ def uploaded_file(filename):
 
 @app.route("/leaderboard")
 def leaderboard():
-
 
     conn = get_db()
 
@@ -775,12 +835,10 @@ def leaderboard():
 )
 def admin_logout():
 
-
     session.pop(
         "admin",
         None
     )
-
 
     return redirect(
         url_for("admin_login")
@@ -792,7 +850,6 @@ def admin_logout():
 # =========================
 
 if __name__ == "__main__":
-
 
     app.run(
 

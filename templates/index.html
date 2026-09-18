@@ -99,6 +99,9 @@
         enctype="multipart/form-data"
     >
 
+
+        <!-- UID -->
+
         <label>
             🆔 Free Fire UID
         </label>
@@ -106,13 +109,90 @@
         <input
             type="text"
             name="uid"
-            placeholder="Enter UID"
+            placeholder="Enter your Free Fire UID"
             required
         >
 
 
+        <!-- PLAYER PAYMENT QR -->
+
+        <div class="payment-info">
+
+            <h3>
+                💳 PAYMENT QR
+            </h3>
+
+            <p>
+                Match verify hone ke baad aapko
+                <strong>Kill Reward</strong> diya jayega.
+            </p>
+
+            <p>
+                🔫 <strong>1 Kill = ₹5</strong>
+            </p>
+
+            <p>
+                💰 Example:
+                <strong>5 Kills = ₹25</strong>
+            </p>
+
+            <p>
+                📱 <strong>Apna UPI QR Code upload karein.</strong>
+            </p>
+
+            <p>
+                Aapke verified reward ka payment
+                isi QR Code par bheja jayega.
+            </p>
+
+            <p>
+                ⚠️ QR Code clear aur scan hone layak hona chahiye.
+            </p>
+
+        </div>
+
+
         <label>
-            📸 Game History
+            📱 Your UPI QR Code
+        </label>
+
+        <input
+            type="file"
+            name="qr"
+            accept="image/*"
+            required
+        >
+
+        <small>
+            Apna payment receive karne wala UPI QR Code upload karein.
+        </small>
+
+
+        <!-- GAME HISTORY -->
+
+        <div class="proof-info">
+
+            <h3>
+                📸 GAME HISTORY — Kyon chahiye?
+            </h3>
+
+            <p>
+                Game History screenshot Admin ko match result
+                verify karne ke liye chahiye.
+            </p>
+
+            <ul>
+                <li>🆔 UID verify karne ke liye</li>
+                <li>🏆 Match result check karne ke liye</li>
+                <li>🔫 Kills verify karne ke liye</li>
+                <li>⏱️ Match ki details check karne ke liye</li>
+            </ul>
+
+        </div>
+
+
+        <label>
+            📸 Game History / Result Screenshot
         </label>
 
         <input
@@ -123,8 +203,35 @@
         >
 
         <small>
-            Upload clear game history/result screenshot.
+            Clear Game History / Result screenshot upload karein.
         </small>
+
+
+        <!-- MATCH VIDEO -->
+
+        <div class="proof-info">
+
+            <h3>
+                🎥 MATCH VIDEO — Kyon chahiye?
+            </h3>
+
+            <p>
+                Match video Admin ko gameplay aur match
+                verify karne ke liye chahiye.
+            </p>
+
+            <ul>
+                <li>🎮 Gameplay verify karne ke liye</li>
+                <li>🔫 Kills check karne ke liye</li>
+                <li>🛡️ Fair play verify karne ke liye</li>
+                <li>🚫 Fake proof check karne ke liye</li>
+            </ul>
+
+            <p>
+                ⏱️ <strong>Maximum video length: 20 seconds</strong>
+            </p>
+
+        </div>
 
 
         <label>
@@ -134,27 +241,33 @@
         <input
             type="file"
             name="video"
+            id="videoInput"
             accept="video/*"
             required
         >
 
         <small>
-            Upload your match recording.
+            Maximum 20 seconds ki clear match recording upload karein.
         </small>
 
+        <p id="videoMessage"></p>
+
+
+        <!-- IMPORTANT RULES -->
 
         <div class="warning">
 
             ⚠️ <b>NO EDIT</b>
 
             <p>
-                Submit karne ke baad UID,
-                History aur Video change nahi
-                kiye ja sakte.
+                Submit karne ke baad UID, QR Code,
+                History aur Video change nahi kiye ja sakte.
             </p>
 
         </div>
 
+
+        <!-- 5 MINUTE RULE -->
 
         <div class="rules">
 
@@ -163,18 +276,19 @@
             </h3>
 
             <p>
-                Match khatam hone ke baad
-                proof 5 minutes ke andar
-                submit karein.
+                Match khatam hone ke baad proof
+                <strong>5 minutes</strong> ke andar submit karein.
             </p>
 
             <p>
-                Late submission tournament
-                rules ke according reject ho sakti hai.
+                Late submission tournament rules ke
+                according reject ho sakti hai.
             </p>
 
         </div>
 
+
+        <!-- CONFIRM -->
 
         <label class="check">
 
@@ -201,6 +315,8 @@
 
 </section>
 
+
+<!-- WEBSITE INFO -->
 
 <section class="info">
 
@@ -230,6 +346,15 @@
         📸 Instagram
     </a>
 
+
+    <a
+        class="link-btn"
+        href="https://www.youtube.com/@freefire_tour"
+        target="_blank"
+    >
+        ▶️ YouTube
+    </a>
+
 </section>
 
 </main>
@@ -242,18 +367,71 @@
 </footer>
 
 
-<script
-    src="{{ url_for('static', filename='script.js') }}"
-></script>
+<script>
+
+const videoInput = document.getElementById("videoInput");
+const videoMessage = document.getElementById("videoMessage");
+
+videoInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (!file) {
+        videoMessage.textContent = "";
+        return;
+    }
+
+    const video = document.createElement("video");
+
+    video.preload = "metadata";
+
+    video.onloadedmetadata = function () {
+
+        window.URL.revokeObjectURL(video.src);
+
+        if (video.duration > 20) {
+
+            videoMessage.textContent =
+                "❌ Video 20 seconds se zyada hai. Please 20 seconds ya usse kam video upload karein.";
+
+            videoMessage.style.color = "red";
+
+            videoInput.value = "";
+
+        } else {
+
+            videoMessage.textContent =
+                "✅ Video accepted: " +
+                video.duration.toFixed(1) +
+                " seconds";
+
+            videoMessage.style.color = "green";
+        }
+
+    };
+
+    video.src = URL.createObjectURL(file);
+
+});
+
+
+document
+    .getElementById("submissionForm")
+    .addEventListener("submit", function () {
+
+        const button =
+            document.getElementById("submitBtn");
+
+        button.disabled = true;
+
+        button.textContent =
+            "⏳ Submitting...";
+
+    });
+
+</script>
+
 
 </body>
 
 </html>
-
-अब ऊपर menu में:
-
-Home | Leaderboard | 🔐 Admin | Instagram
-
-आ जाएगा।
-
-अगला जरूरी काम: "admin.html" भेज दो। उसमें मैं player की uploaded History Screenshot + Match Video देखने के buttons जोड़ दूँगा, ताकि Admin Panel से proof देखकर Verify/Reject कर सको।

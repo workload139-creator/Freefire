@@ -456,7 +456,77 @@ function confirmReject() {
 
 }
 
+<!-- QR IMAGE SEND -->
+<div class="card">
+    <h2>📤 Send QR Image</h2>
 
+    <p>
+        Player ko payment ke liye QR image select karke send/share karein.
+    </p>
+
+    <label>🖼️ Select QR Image</label>
+
+    <input
+        type="file"
+        id="qrImage"
+        accept="image/*"
+    >
+
+    <br><br>
+
+    <button type="button" onclick="sendQR()">
+        📤 Send / Share QR
+    </button>
+
+    <p id="qrMessage"></p>
+</div>
+
+<script>
+function sendQR() {
+
+    const input = document.getElementById("qrImage");
+    const message = document.getElementById("qrMessage");
+
+    if (!input.files.length) {
+        message.textContent = "❌ Pehle QR image select karein.";
+        message.style.color = "red";
+        return;
+    }
+
+    const file = input.files[0];
+
+    if (!file.type.startsWith("image/")) {
+        message.textContent = "❌ Sirf image file select karein.";
+        message.style.color = "red";
+        return;
+    }
+
+    if (navigator.share) {
+
+        const shareData = {
+            title: "FF Tournament Payment QR",
+            text: "FF Tournament payment ke liye QR Code",
+            files: [file]
+        };
+
+        navigator.share(shareData)
+            .then(() => {
+                message.textContent = "✅ QR share option open ho gaya.";
+                message.style.color = "green";
+            })
+            .catch(() => {
+                message.textContent = "ℹ️ QR share cancel kiya gaya.";
+            });
+
+    } else {
+
+        message.textContent =
+            "ℹ️ Is browser me direct share support nahi hai. QR image ko manually share karein.";
+
+        message.style.color = "orange";
+    }
+}
+</script>
 </script>
 
 

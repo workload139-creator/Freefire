@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>FF Tournament</title>
+    <title>Admin Panel - FF Tournament</title>
 
     <link
         rel="stylesheet"
@@ -19,12 +19,14 @@
 
 </head>
 
+
 <body>
+
 
 <header>
 
     <div class="logo">
-        🔥 FF TOURNAMENT
+        🔐 FF TOURNAMENT ADMIN
     </div>
 
     <nav>
@@ -37,15 +39,8 @@
             Leaderboard
         </a>
 
-        <a href="/admin/login">
-            🔐 Admin
-        </a>
-
-        <a
-            href="https://www.instagram.com/officialajay6226/?stkn=c2d5N2lhdmh0bGt0"
-            target="_blank"
-        >
-            Instagram
+        <a href="/admin/logout">
+            Logout
         </a>
 
     </nav>
@@ -55,404 +50,412 @@
 
 <main>
 
+
 <section class="hero">
 
     <h1>
-        🏆 MATCH RESULT
+        📋 PLAYER SUBMISSIONS
     </h1>
 
     <p>
-        Submit your match proof
+        Review player proof and verify results
     </p>
 
 </section>
 
 
-<section class="card">
+{% with messages = get_flashed_messages() %}
 
-    <h2>
-        📋 Result Submission
-    </h2>
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="message">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
 
 
-    {% with messages = get_flashed_messages() %}
 
-        {% if messages %}
+{% if submissions %}
 
-            {% for message in messages %}
 
-                <div class="message">
-                    {{ message }}
+    {% for item in submissions %}
+
+
+    <section class="admin-card">
+
+
+        <!-- PLAYER HEADER -->
+
+        <div class="admin-title">
+
+            <h2>
+                🆔 {{ item["uid"] }}
+            </h2>
+
+            <span class="status">
+                {{ item["status"] }}
+            </span>
+
+        </div>
+
+
+        <!-- SUBMISSION TIME -->
+
+        <p>
+
+            📅 Submitted:
+
+            {{ item["submitted_at"] }}
+
+        </p>
+
+
+
+        <!-- MATCH PROOF -->
+
+        <div class="proof-section">
+
+            <h3>
+                📁 MATCH PROOF
+            </h3>
+
+
+            <p>
+                📸 <b>Game History</b>
+                — UID, kills और match result verify करने के लिए।
+            </p>
+
+
+            <a
+                href="{{ url_for('uploaded_file', filename=item['history_file']) }}"
+                target="_blank"
+                class="link-btn"
+            >
+                📸 View History Screenshot
+            </a>
+
+
+            <p style="margin-top:15px;">
+
+                🎥 <b>Match Video</b>
+                — gameplay और match proof verify करने के लिए।
+
+            </p>
+
+
+            <a
+                href="{{ url_for('uploaded_file', filename=item['video_file']) }}"
+                target="_blank"
+                class="link-btn"
+            >
+                🎥 Watch Match Video
+            </a>
+
+        </div>
+
+
+
+        <!-- PENDING -->
+
+        {% if item["status"] == "Pending" %}
+
+
+        <div class="verify-section">
+
+
+            <h3>
+                ✅ VERIFY RESULT
+            </h3>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('verify_submission', submission_id=item['id']) }}"
+                onsubmit="return confirmVerification(this);"
+            >
+
+
+                <!-- KILLS -->
+
+                <label>
+                    🔥 Verified Kills
+                </label>
+
+                <input
+                    type="number"
+                    name="kills"
+                    class="kills-input"
+                    min="0"
+                    max="99"
+                    placeholder="Enter verified kills"
+                    required
+                    oninput="calculateReward(this)"
+                >
+
+
+                <!-- REWARD PREVIEW -->
+
+                <div class="reward-preview">
+
+                    💰 WIN REWARD
+
+                    <div>
+
+                        <strong>
+                            ₹<span class="reward-amount">0</span>
+                        </strong>
+
+                    </div>
+
+                    <small>
+                        1 Kill = ₹5
+                    </small>
+
                 </div>
 
-            {% endfor %}
+
+                <!-- POSITION -->
+
+                <label>
+                    🏆 Position
+                </label>
+
+                <input
+                    type="number"
+                    name="position"
+                    min="1"
+                    max="100"
+                    placeholder="Enter position"
+                    required
+                >
+
+
+                <!-- PAYMENT INFO -->
+
+                <div class="payment-note">
+
+                    💳 <b>Player Payment</b>
+
+                    <p>
+                        Result verify होने के बाद player से
+                        QR / UPI details लेकर verified reward
+                        payment करें।
+                    </p>
+
+                    <p>
+                        🔫 Reward =
+                        <b>Verified Kills × ₹5</b>
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                >
+                    🔒 Verify & Lock Result
+                </button>
+
+
+            </form>
+
+
+
+            <!-- REJECT -->
+
+            <form
+                method="POST"
+                action="{{ url_for('reject_submission', submission_id=item['id']) }}"
+                onsubmit="return confirmReject();"
+            >
+
+                <button
+                    type="submit"
+                    class="reject"
+                >
+                    ❌ Reject Submission
+                </button>
+
+            </form>
+
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- LOCKED RESULT -->
+
+        <div class="locked">
+
+            🔒 <b>RESULT LOCKED</b>
+
+            <br><br>
+
+
+            🔥 Kills:
+
+            <b>
+                {{ item["kills"] }}
+            </b>
+
+
+            <br>
+
+
+            💰 Win Reward:
+
+            <b>
+                ₹{{ (item["kills"] or 0) * 5 }}
+            </b>
+
+
+            <br>
+
+
+            🏆 Position:
+
+            <b>
+                {{ item["position"] }}
+            </b>
+
+
+            {% if item["verified_at"] %}
+
+            <br><br>
+
+            ✅ Verified:
+
+            {{ item["verified_at"] }}
+
+            {% endif %}
+
+
+            <br><br>
+
+
+            💳 <b>Payment</b>
+
+            <p>
+                Player से QR / UPI details लेकर
+                reward payment किया जा सकता है।
+            </p>
+
+        </div>
+
 
         {% endif %}
 
-    {% endwith %}
 
+    </section>
 
-    <form
-        id="submissionForm"
-        action="/submit"
-        method="POST"
-        enctype="multipart/form-data"
-    >
 
+    {% endfor %}
 
-        <!-- UID -->
 
-        <label>
-            🆔 Free Fire UID
-        </label>
 
-        <input
-            type="text"
-            name="uid"
-            placeholder="Enter your Free Fire UID"
-            required
-        >
+{% else %}
 
 
-        <!-- KILL REWARD -->
+    <section class="card">
 
-        <div class="reward-info">
+        <h2>
+            📭 No submissions found
+        </h2>
 
-            <h3>
-                💰 WIN REWARD
-            </h3>
+        <p>
+            Player submissions will appear here.
+        </p>
 
-            <p>
-                🔫 <strong>1 Kill = ₹5</strong>
-            </p>
+    </section>
 
-            <p>
-                Match verify hone ke baad
-                verified kills ke according
-                reward diya jayega.
-            </p>
 
-            <p>
-                🧮 Example:
-                <strong>5 Kills = ₹25</strong>
-            </p>
+{% endif %}
 
-            <p>
-                💳 Payment ke liye Admin winner
-                se QR / UPI details lega.
-            </p>
-
-            <p>
-                ⚠️ Reward sirf verified result
-                ke according diya jayega.
-            </p>
-
-        </div>
-
-
-        <!-- GAME HISTORY -->
-
-        <div class="proof-info">
-
-            <h3>
-                📸 GAME HISTORY — Kyon chahiye?
-            </h3>
-
-            <p>
-                Game History screenshot Admin ko
-                tumhara match result verify karne
-                ke liye chahiye.
-            </p>
-
-            <ul>
-
-                <li>
-                    🆔 Free Fire UID verify karne ke liye
-                </li>
-
-                <li>
-                    🏆 Match result check karne ke liye
-                </li>
-
-                <li>
-                    🔫 Kills verify karne ke liye
-                </li>
-
-                <li>
-                    📊 Position/result check karne ke liye
-                </li>
-
-            </ul>
-
-        </div>
-
-
-        <label>
-            📸 Game History / Result Screenshot
-        </label>
-
-        <input
-            type="file"
-            name="history"
-            accept="image/*"
-            required
-        >
-
-        <small>
-            Clear Game History / Result screenshot upload karein.
-        </small>
-
-
-        <!-- MATCH VIDEO -->
-
-        <div class="proof-info">
-
-            <h3>
-                🎥 MATCH VIDEO — Kyon chahiye?
-            </h3>
-
-            <p>
-                Match video Admin ko gameplay aur
-                match proof verify karne ke liye chahiye.
-            </p>
-
-            <ul>
-
-                <li>
-                    🎮 Gameplay verify karne ke liye
-                </li>
-
-                <li>
-                    🔫 Kills check karne ke liye
-                </li>
-
-                <li>
-                    🛡️ Fair play verify karne ke liye
-                </li>
-
-                <li>
-                    🚫 Fake proof check karne ke liye
-                </li>
-
-            </ul>
-
-            <p>
-                ⏱️ <strong>Maximum 20 seconds</strong>
-            </p>
-
-        </div>
-
-
-        <label>
-            🎥 Match Video
-        </label>
-
-        <input
-            type="file"
-            name="video"
-            id="videoInput"
-            accept="video/*"
-            required
-        >
-
-        <small>
-            Maximum 20 seconds ki clear match
-            recording upload karein.
-        </small>
-
-        <p id="videoMessage"></p>
-
-
-        <!-- NO EDIT -->
-
-        <div class="warning">
-
-            ⚠️ <b>NO EDIT</b>
-
-            <p>
-                Submit karne ke baad UID,
-                History aur Video change nahi
-                kiye ja sakte.
-            </p>
-
-        </div>
-
-
-        <!-- 5 MINUTE RULE -->
-
-        <div class="rules">
-
-            <h3>
-                ⏱️ 5 Minute Rule
-            </h3>
-
-            <p>
-                Match khatam hone ke baad proof
-                <strong>5 minutes</strong> ke andar
-                submit karein.
-            </p>
-
-            <p>
-                Late submission tournament rules
-                ke according reject ho sakti hai.
-            </p>
-
-        </div>
-
-
-        <!-- CONFIRM -->
-
-        <label class="check">
-
-            <input
-                type="checkbox"
-                required
-            >
-
-            I confirm that my information is correct.
-
-        </label>
-
-
-        <button
-            type="submit"
-            id="submitBtn"
-        >
-
-            🔒 Submit & Lock
-
-        </button>
-
-    </form>
-
-</section>
-
-
-<!-- WEBSITE INFO -->
-
-<section class="info">
-
-    <h2>
-        🌐 FF Tournament
-    </h2>
-
-    <p>
-        Official Tournament Platform
-    </p>
-
-
-    <a
-        class="link-btn"
-        href="https://freefire-touranament.onrender.com"
-        target="_blank"
-    >
-        🌐 Website
-    </a>
-
-
-    <a
-        class="link-btn"
-        href="https://www.instagram.com/officialajay6226/?stkn=c2d5N2lhdmh0bGt0"
-        target="_blank"
-    >
-        📸 Instagram
-    </a>
-
-
-    <a
-        class="link-btn"
-        href="https://www.youtube.com/@freefire_tour"
-        target="_blank"
-    >
-        ▶️ YouTube
-    </a>
-
-</section>
 
 </main>
 
 
+
 <footer>
 
-    © 2026 FF Tournament
+    <h3>
+        🌐 FF Tournament
+    </h3>
+
+    <p>
+        Admin Panel
+    </p>
+
+    <p>
+        © 2026 FF Tournament
+    </p>
 
 </footer>
 
 
+
 <script>
 
-const videoInput =
-    document.getElementById("videoInput");
 
-const videoMessage =
-    document.getElementById("videoMessage");
+function calculateReward(input) {
 
+    const card =
+        input.closest(".admin-card");
 
-videoInput.addEventListener("change", function () {
+    const reward =
+        card.querySelector(".reward-amount");
 
-    const file = this.files[0];
-
-    if (!file) {
-
-        videoMessage.textContent = "";
-
-        return;
-    }
+    const kills =
+        parseInt(input.value) || 0;
 
 
-    const video =
-        document.createElement("video");
+    reward.textContent =
+        kills * 5;
 
-    video.preload = "metadata";
-
-
-    video.onloadedmetadata = function () {
-
-        window.URL.revokeObjectURL(video.src);
+}
 
 
-        if (video.duration > 20) {
 
-            videoMessage.textContent =
-                "❌ Video 20 seconds se zyada hai. Please 20 seconds ya usse kam video upload karein.";
+function confirmVerification(form) {
 
-            videoMessage.style.color = "red";
-
-            videoInput.value = "";
-
-        } else {
-
-            videoMessage.textContent =
-                "✅ Video accepted: " +
-                video.duration.toFixed(1) +
-                " seconds";
-
-            videoMessage.style.color = "green";
-
-        }
-
-    };
+    const kills =
+        parseInt(
+            form.querySelector(".kills-input").value
+        ) || 0;
 
 
-    video.src =
-        URL.createObjectURL(file);
-
-});
+    const reward =
+        kills * 5;
 
 
-document
-    .getElementById("submissionForm")
-    .addEventListener("submit", function () {
+    return confirm(
+        "Verify & Lock Result?\n\n" +
+        "Verified Kills: " + kills + "\n" +
+        "Win Reward: ₹" + reward + "\n\n" +
+        "Verify karne ke baad result edit nahi kiya ja sakega."
+    );
 
-        const button =
-            document.getElementById("submitBtn");
+}
 
-        button.disabled = true;
 
-        button.textContent =
-            "⏳ Submitting...";
 
-    });
+function confirmReject() {
+
+    return confirm(
+        "Kya aap is submission ko reject karna chahte hain?"
+    );
+
+}
+
 
 </script>
 

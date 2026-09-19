@@ -2,13 +2,9 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Admin Panel - FF Tournament</title>
 
@@ -16,12 +12,9 @@
         rel="stylesheet"
         href="{{ url_for('static', filename='style.css') }}"
     >
-
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -30,19 +23,9 @@
     </div>
 
     <nav>
-
-        <a href="/">
-            Home
-        </a>
-
-        <a href="/leaderboard">
-            Leaderboard
-        </a>
-
-        <a href="/admin/logout">
-            Logout
-        </a>
-
+        <a href="/">Home</a>
+        <a href="/leaderboard">Leaderboard</a>
+        <a href="/admin/logout">Logout</a>
     </nav>
 
 </header>
@@ -50,16 +33,11 @@
 
 <main>
 
-
 <section class="hero">
 
-    <h1>
-        📋 PLAYER SUBMISSIONS
-    </h1>
+    <h1>📋 PLAYER SUBMISSIONS</h1>
 
-    <p>
-        Review player proof and verify results
-    </p>
+    <p>Review player proof and verify results</p>
 
 </section>
 
@@ -84,12 +62,9 @@
 
 {% if submissions %}
 
-
     {% for item in submissions %}
 
-
     <section class="admin-card">
-
 
         <!-- PLAYER HEADER -->
 
@@ -109,11 +84,7 @@
         <!-- SUBMISSION TIME -->
 
         <p>
-
-            📅 Submitted:
-
-            {{ item["submitted_at"] }}
-
+            📅 Submitted: {{ item["submitted_at"] }}
         </p>
 
 
@@ -122,16 +93,15 @@
 
         <div class="proof-section">
 
-            <h3>
-                📁 MATCH PROOF
-            </h3>
+            <h3>📁 MATCH PROOF</h3>
 
+
+            <!-- HISTORY -->
 
             <p>
                 📸 <b>Game History</b>
                 — UID, kills और match result verify करने के लिए।
             </p>
-
 
             <a
                 href="{{ url_for('uploaded_file', filename=item['history_file']) }}"
@@ -142,13 +112,15 @@
             </a>
 
 
+
+            <!-- VIDEO -->
+
             <p style="margin-top:15px;">
 
                 🎥 <b>Match Video</b>
                 — gameplay और match proof verify करने के लिए।
 
             </p>
-
 
             <a
                 href="{{ url_for('uploaded_file', filename=item['video_file']) }}"
@@ -158,6 +130,46 @@
                 🎥 Watch Match Video
             </a>
 
+
+
+            <!-- PAYMENT QR -->
+
+            <div style="margin-top:20px;">
+
+                <h3>💳 Payment QR</h3>
+
+                {% if item["qr_file"] %}
+
+                    <p>
+                        Player का payment QR:
+                    </p>
+
+                    <img
+                        src="{{ url_for('uploaded_file', filename=item['qr_file']) }}"
+                        alt="Player Payment QR"
+                        style="
+                            display:block;
+                            width:220px;
+                            max-width:100%;
+                            height:auto;
+                            margin-top:10px;
+                            border:2px solid #ddd;
+                            border-radius:12px;
+                            padding:8px;
+                            background:white;
+                        "
+                    >
+
+                {% else %}
+
+                    <p>
+                        ⚠️ Payment QR उपलब्ध नहीं है।
+                    </p>
+
+                {% endif %}
+
+            </div>
+
         </div>
 
 
@@ -166,13 +178,9 @@
 
         {% if item["status"] == "Pending" %}
 
-
         <div class="verify-section">
 
-
-            <h3>
-                ✅ VERIFY RESULT
-            </h3>
+            <h3>✅ VERIFY RESULT</h3>
 
 
             <form
@@ -181,12 +189,9 @@
                 onsubmit="return confirmVerification(this);"
             >
 
-
                 <!-- KILLS -->
 
-                <label>
-                    🔥 Verified Kills
-                </label>
+                <label>🔥 Verified Kills</label>
 
                 <input
                     type="number"
@@ -207,25 +212,19 @@
                     💰 WIN REWARD
 
                     <div>
-
                         <strong>
                             ₹<span class="reward-amount">0</span>
                         </strong>
-
                     </div>
 
-                    <small>
-                        1 Kill = ₹5
-                    </small>
+                    <small>1 Kill = ₹5</small>
 
                 </div>
 
 
                 <!-- POSITION -->
 
-                <label>
-                    🏆 Position
-                </label>
+                <label>🏆 Position</label>
 
                 <input
                     type="number"
@@ -244,9 +243,8 @@
                     💳 <b>Player Payment</b>
 
                     <p>
-                        Result verify होने के बाद player से
-                        QR / UPI details लेकर verified reward
-                        payment करें।
+                        Result verify होने के बाद ऊपर दिया गया QR
+                        देखकर verified reward payment करें।
                     </p>
 
                     <p>
@@ -257,12 +255,9 @@
                 </div>
 
 
-                <button
-                    type="submit"
-                >
+                <button type="submit">
                     🔒 Verify & Lock Result
                 </button>
-
 
             </form>
 
@@ -285,7 +280,6 @@
 
             </form>
 
-
         </div>
 
 
@@ -300,63 +294,45 @@
 
             <br><br>
 
-
             🔥 Kills:
-
-            <b>
-                {{ item["kills"] }}
-            </b>
-
+            <b>{{ item["kills"] }}</b>
 
             <br>
-
 
             💰 Win Reward:
-
-            <b>
-                ₹{{ (item["kills"] or 0) * 5 }}
-            </b>
-
+            <b>₹{{ (item["kills"] or 0) * 5 }}</b>
 
             <br>
 
-
             🏆 Position:
-
-            <b>
-                {{ item["position"] }}
-            </b>
+            <b>{{ item["position"] }}</b>
 
 
             {% if item["verified_at"] %}
 
-            <br><br>
+                <br><br>
 
-            ✅ Verified:
-
-            {{ item["verified_at"] }}
+                ✅ Verified:
+                {{ item["verified_at"] }}
 
             {% endif %}
 
 
             <br><br>
 
-
             💳 <b>Payment</b>
 
             <p>
-                Player से QR / UPI details लेकर
+                ऊपर दिख रहे player QR का उपयोग करके
                 reward payment किया जा सकता है।
             </p>
 
         </div>
 
-
         {% endif %}
 
 
     </section>
-
 
     {% endfor %}
 
@@ -364,22 +340,15 @@
 
 {% else %}
 
-
     <section class="card">
 
-        <h2>
-            📭 No submissions found
-        </h2>
+        <h2>📭 No submissions found</h2>
 
-        <p>
-            Player submissions will appear here.
-        </p>
+        <p>Player submissions will appear here.</p>
 
     </section>
 
-
 {% endif %}
-
 
 </main>
 
@@ -387,17 +356,11 @@
 
 <footer>
 
-    <h3>
-        🌐 FF Tournament
-    </h3>
+    <h3>🌐 FF Tournament</h3>
 
-    <p>
-        Admin Panel
-    </p>
+    <p>Admin Panel</p>
 
-    <p>
-        © 2026 FF Tournament
-    </p>
+    <p>© 2026 FF Tournament</p>
 
 </footer>
 
@@ -405,37 +368,26 @@
 
 <script>
 
-
 function calculateReward(input) {
 
-    const card =
-        input.closest(".admin-card");
+    const card = input.closest(".admin-card");
 
-    const reward =
-        card.querySelector(".reward-amount");
+    const reward = card.querySelector(".reward-amount");
 
-    const kills =
-        parseInt(input.value) || 0;
+    const kills = parseInt(input.value) || 0;
 
-
-    reward.textContent =
-        kills * 5;
+    reward.textContent = kills * 5;
 
 }
 
 
-
 function confirmVerification(form) {
 
-    const kills =
-        parseInt(
-            form.querySelector(".kills-input").value
-        ) || 0;
+    const kills = parseInt(
+        form.querySelector(".kills-input").value
+    ) || 0;
 
-
-    const reward =
-        kills * 5;
-
+    const reward = kills * 5;
 
     return confirm(
         "Verify & Lock Result?\n\n" +
@@ -447,7 +399,6 @@ function confirmVerification(form) {
 }
 
 
-
 function confirmReject() {
 
     return confirm(
@@ -456,79 +407,7 @@ function confirmReject() {
 
 }
 
-<!-- QR IMAGE SEND -->
-<div class="card">
-    <h2>📤 Send QR Image</h2>
-
-    <p>
-        Player ko payment ke liye QR image select karke send/share karein.
-    </p>
-
-    <label>🖼️ Select QR Image</label>
-
-    <input
-        type="file"
-        id="qrImage"
-        accept="image/*"
-    >
-
-    <br><br>
-
-    <button type="button" onclick="sendQR()">
-        📤 Send / Share QR
-    </button>
-
-    <p id="qrMessage"></p>
-</div>
-
-<script>
-function sendQR() {
-
-    const input = document.getElementById("qrImage");
-    const message = document.getElementById("qrMessage");
-
-    if (!input.files.length) {
-        message.textContent = "❌ Pehle QR image select karein.";
-        message.style.color = "red";
-        return;
-    }
-
-    const file = input.files[0];
-
-    if (!file.type.startsWith("image/")) {
-        message.textContent = "❌ Sirf image file select karein.";
-        message.style.color = "red";
-        return;
-    }
-
-    if (navigator.share) {
-
-        const shareData = {
-            title: "FF Tournament Payment QR",
-            text: "FF Tournament payment ke liye QR Code",
-            files: [file]
-        };
-
-        navigator.share(shareData)
-            .then(() => {
-                message.textContent = "✅ QR share option open ho gaya.";
-                message.style.color = "green";
-            })
-            .catch(() => {
-                message.textContent = "ℹ️ QR share cancel kiya gaya.";
-            });
-
-    } else {
-
-        message.textContent =
-            "ℹ️ Is browser me direct share support nahi hai. QR image ko manually share karein.";
-
-        message.style.color = "orange";
-    }
-}
 </script>
-</script>
-
 
 </body>
 
